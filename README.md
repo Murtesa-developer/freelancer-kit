@@ -217,9 +217,3 @@ const auth = new FreelancerAuth(); // Reads from process.env.FREELANCER_CLIENT_I
 ```
 
 ---
-
-<p align="center">
-  <a href="https://readmeforge.app?utm_source=badge">
-    <img src="https://readmeforge.app/badge.svg" alt="Made with ReadmeForge" height="20">
-  </a>
-</p>
