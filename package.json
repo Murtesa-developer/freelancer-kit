@@ -1,0 +1,23 @@
+{
+  "name": "freelancer-kit",
+  "version": "1.0.0",
+  "description": "Unofficial Node.js toolkit for integrating with the Freelancer.com API",
+  "author": "MURTESA",
+  "license": "MIT",
+  "main": "src/index.js",
+  "keywords": [
+    "freelancer",
+    "freelancer-kit",
+    "freelancer-api",
+    "nodejs",
+    "sdk",
+    "client",
+    "unofficial"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
