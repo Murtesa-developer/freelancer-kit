@@ -1,6 +1,6 @@
 {
   "name": "freelancer-kit",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Unofficial Node.js toolkit for integrating with the Freelancer.com API",
   "author": "MURTESA",
   "license": "MIT",
@@ -9,6 +9,8 @@
     "freelancer",
     "freelancer-kit",
     "freelancer-api",
+    "freelancer-client",
+    "freelance",
     "nodejs",
     "sdk",
     "client",
@@ -18,7 +20,6 @@
     "node": ">=14"
   },
   "dependencies": {
-    "freelancer-kit": "^1.0.0",
     "node-fetch": "^2.7.0"
   }
 }

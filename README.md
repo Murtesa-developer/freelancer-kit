@@ -11,6 +11,7 @@ This repository provides a comprehensive JavaScript toolkit for interacting with
 *   **Token Management:** Easily handle access and refresh tokens for persistent API access.
 *   **Profile Retrieval:** Fetch and manage your Freelancer profile information.
 *   **Project Searching:** Efficiently search for projects based on various criteria.
+*   **Create Bid:** you can create a bid.
 
 ## Installation 📥
 
@@ -33,103 +34,99 @@ npm install
 ### Authentication Example
 
 ```javascript
-const FreelancerAuth = require('freelancer-kit').FreelancerAuth;
+const { FreelancerAuth } = require("../src/index");
 
-const auth = new FreelancerAuth({
-    clientId: 'YOUR_CLIENT_ID',
-    clientSecret: 'YOUR_CLIENT_SECRET',
-    redirectUri: 'YOUR_REDIRECT_URI'
-});
+(async () => {
+  const clientId = "app_id";
+  const clientSecret = "client_secret";
+  const redirectUri = "https://example.com/callback";
+  const sandbox = true;
 
-// Get authorization URL
-const authorizationUrl = auth.getAuthorizationUrl(['email', 'profile']);
-console.log('Please visit this URL to authorize:', authorizationUrl);
+  const flags = {
+    messaging: true,        
+    project_create: true,    
+    project_manage: false,   
+    contest_create: false,   
+    contest_manage: false,   
+    user_information: true,  
+    location_tracking_create: false, 
+    location_tracking_view: false,   
+  };
 
-// After user authorizes, you'll receive a code. Exchange it for tokens.
-// Assuming you have the authorization code:
-async function exchangeCodeForToken(code) {
-    try {
-        const tokens = await auth.exchangeCodeForToken(code);
-        console.log('Access Token:', tokens.access_token);
-        console.log('Refresh Token:', tokens.refresh_token);
-        // Store tokens securely
-    } catch (error) {
-        console.error('Error exchanging code for token:', error);
-    }
-}
+  const auth = new FreelancerAuth({ clientId, clientSecret, redirectUri, sandbox, flags });
 
-// Example of refreshing a token
-async function refreshTokenExample(refreshToken) {
-    try {
-        const newTokens = await auth.refreshToken(refreshToken);
-        console.log('New Access Token:', newTokens.access_token);
-        // Update stored tokens
-    } catch (error) {
-        console.error('Error refreshing token:', error);
-    }
-}
+  const authUrl = auth.generateAuthLink();
+  console.log("Open this link in your browser to authorize the app:");
+  console.log(authUrl);
+  const code = await FreelancerAuth.askCode("Enter the code you received: ");
+
+  const tokens = await auth.exchangeCode(code.trim());
+
+  console.log("Access Token:", tokens.access_token);
+  console.log("Refresh Token:", tokens.refresh_token);
+})();
 ```
 
 ### Self Profile Example
 
 ```javascript
-const SelfProfile = require('freelancer-kit').SelfProfile;
-const FreelancerAuth = require('freelancer-kit').FreelancerAuth; // Needed for token management
+const { SelfProfile } = require("../src/index");
+(async () => {
+  try {
+    const profile = new SelfProfile({
+      accessToken: "access_token",
+      sandbox: true
+    });
 
-// Assuming you have obtained and stored your access token
-const accessToken = 'YOUR_STORED_ACCESS_TOKEN';
+    const res = await profile.getMyProfile({
+      avatar: true,
+      display_info: true,
+      profile_description: true,
+    });
 
-async function getProfile() {
-    try {
-        const profile = new SelfProfile(accessToken);
-        const userProfile = await profile.getProfile();
-        console.log('User Profile:', userProfile);
-    } catch (error) {
-        console.error('Error fetching profile:', error);
-    }
-}
-
-getProfile();
+    console.log(res);
+  } catch (err) {
+    console.error("Error:", err.message);
+  }
+})();
 ```
 
 ### Search Projects Example
 
 ```javascript
-const SearchProjects = require('freelancer-kit').SearchProjects;
-const FreelancerAuth = require('freelancer-kit').FreelancerAuth; // Needed for token management
+const { SearchProjects } = require("../src/index");
 
-// Assuming you have obtained and stored your access token
-const accessToken = 'YOUR_STORED_ACCESS_TOKEN';
+const projects = new SearchProjects({
+  accessToken: "access_token",
+  sandbox: true,
+});
 
-async function searchProjects() {
-    try {
-        const searcher = new SearchProjects(accessToken);
-        const projects = await searcher.search({
-            limit: 10,
-            full_description: 1,
-            query: 'web development'
-        });
-        console.log('Found Projects:', projects);
-    } catch (error) {
-        console.error('Error searching projects:', error);
-    }
-}
+(async () => {
+  try {
+    const result = await projects.search({
+      query: "software",
+      project_types: ["fixed"],
+      min_price: 50,
+      max_price: 1000,
+      jobs: [1, 2, 3], // job id
+      languages: ["en"],
+      project_statuses: ["active"],
+      sort_field: "time_updated",
+      limit: 10,
+      full_description: true,
+      user_details: true,
+    });
 
-searchProjects();
+    console.log(result.result.projects);
+  } catch (err) {
+    console.error("Error:", err.details || err.message);
+  }
+})();
 ```
 
 ## Contributing 🤝
 
-We welcome contributions to `freelancer-kit`! Please follow these guidelines:
-
-1.  **Fork the repository.**
-2.  **Create a new branch** for your feature or bug fix.
-3.  **Make your changes** and ensure they are well-documented.
-4.  **Add tests** for your new functionality.
-5.  **Submit a Pull Request** with a clear description of your changes.
-
-Please ensure your code adheres to the existing style and formatting.
-
+We welcome contributions to `freelancer-kit`
 ## License 📜
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -141,79 +138,5 @@ The `freelancer-kit` library exposes several classes to interact with the Freela
 ### `FreelancerAuth` 🔐
 
 Handles authentication and token management.
-
-**Constructor:**
-
-```javascript
-new FreelancerAuth(options: {
-    clientId: string;
-    clientSecret: string;
-    redirectUri: string;
-})
-```
-
-**Methods:**
-
-*   `getAuthorizationUrl(scopes: string[]): string`
-    *   Generates the OAuth 2.0 authorization URL.
-*   `exchangeCodeForToken(code: string): Promise<TokenResponse>`
-    *   Exchanges an authorization code for an access token and refresh token.
-*   `refreshToken(refreshToken: string): Promise<TokenResponse>`
-    *   Refreshes an expired access token using a refresh token.
-
-### `SearchProjects` 🔍
-
-Facilitates searching for projects.
-
-**Constructor:**
-
-```javascript
-new SearchProjects(accessToken: string)
-```
-
-**Methods:**
-
-*   `search(params: SearchParams): Promise<Project[]>`
-    *   Searches for projects.
-    *   `SearchParams` can include:
-        *   `limit`: Maximum number of results.
-        *   `full_description`: Whether to include full project descriptions (1 for yes, 0 for no).
-        *   `query`: Search term.
-        *   `page`: Page number for results.
-        *   `sort_field`: Field to sort by (e.g., 'time_left', 'budget').
-        *   `sort_order`: Sort order ('asc' or 'desc').
-        *   `min_budget`: Minimum budget for projects.
-        *   `max_budget`: Maximum budget for projects.
-        *   `category_id`: Filter by category ID.
-
-### `SelfProfile` 👤
-
-Provides access to the authenticated user's profile.
-
-**Constructor:**
-
-```javascript
-new SelfProfile(accessToken: string)
-```
-
-**Methods:**
-
-*   `getProfile(): Promise<UserProfile>`
-    *   Fetches the authenticated user's profile information.
-
-## Configuration Options & Environment Variables ⚙️
-
-While the library can be configured directly via constructor options, it's recommended to use environment variables for sensitive information like API keys and secrets.
-
-*   `FREELANCER_CLIENT_ID`: Your Freelancer API Client ID.
-*   `FREELANCER_CLIENT_SECRET`: Your Freelancer API Client Secret.
-*   `FREELANCER_REDIRECT_URI`: Your registered Redirect URI.
-
-When using these environment variables, you can instantiate classes without passing explicit options:
-
-```javascript
-// Example using environment variables for FreelancerAuth
-const auth = new FreelancerAuth(); // Reads from process.env.FREELANCER_CLIENT_ID, etc.
-```
 
 ---
