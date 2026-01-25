@@ -1,6 +1,6 @@
 {
   "name": "freelancer-kit",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Unofficial Node.js toolkit for integrating with the Freelancer.com API",
   "author": "MURTESA",
   "license": "MIT",

@@ -34,7 +34,7 @@ npm install
 ### Authentication Example
 
 ```javascript
-const { FreelancerAuth } = require("../src/index");
+const { FreelancerAuth } = require("freelancer-kit");
 
 (async () => {
   const clientId = "app_id";
@@ -70,7 +70,7 @@ const { FreelancerAuth } = require("../src/index");
 ### Self Profile Example
 
 ```javascript
-const { SelfProfile } = require("../src/index");
+const { SelfProfile } = require("freelancer-kit");
 (async () => {
   try {
     const profile = new SelfProfile({
@@ -94,7 +94,7 @@ const { SelfProfile } = require("../src/index");
 ### Search Projects Example
 
 ```javascript
-const { SearchProjects } = require("../src/index");
+const { SearchProjects } = require("freelancer-kit");
 
 const projects = new SearchProjects({
   accessToken: "access_token",
